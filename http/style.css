@@ -1,0 +1,71 @@
+﻿@font-face {
+	font-family: Coalition;
+	src: url('Coalition_v2.ttf');
+}
+
+a {
+	margin-top: 5px;
+	text-decoration: none;
+}
+
+body {
+	background:#E1FFFF;
+}
+
+.button {
+	width: 230px;
+	font-family: Coalition;
+	font-size: 30px;
+}
+
+.field {
+	background-color: #AEA4A1;
+	border-radius: 5px;
+	color: white;
+	font-family: Coalition;
+	height: 25px;
+	text-align: center;
+	width: 250px;
+}
+
+form {
+	margin-top: 0px;
+}
+
+.left {
+	margin: 30px;
+	text-align: left;
+	position: absolute;
+	top: 500px;
+}
+
+.PageContainer {
+	background-image:url('background.png');
+	border-radius: 30px;
+	height: 618px;
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	width: 800px;
+}
+
+.spacer {
+	height: 30px;
+}
+
+.text {
+	color: #C9D2D7;
+	font-family: Coalition;
+	font-size: 30px;
+	text-shadow: #000000 0.1em 0.1em 0.2em;
+}
+
+
+table {
+	display: inline;
+}
+
+td {
+	height: 50px;
+	width: 350px;
+}
