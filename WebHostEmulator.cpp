@@ -4,6 +4,7 @@
 
 WebHostEmulator::WebHostEmulator(void) : Root("http/")
 {
+	accountManager.SetDatabase("database/accounts.gdb");
 }
 
 
@@ -209,6 +210,23 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 }
 
 
+std::string ParseField(const std::string data, const std::string field)
+{
+	size_t start = data.find(field + "=");
+	size_t end = data.find("&", start);
+	
+	if (start == std::string::npos) {
+		return std::string();
+	}
+
+	if (end == std::string::npos) {
+		end = data.length();
+	}
+
+	return std::string(data, start + field.length() + std::string("=").length(), end - start - field.length() - std::string("=").length());
+}
+
+
 // @brief: handles post request
 // @param[in]: request - type of request: /login,/register,/forgot
 // @param[in]: parameters - parameters that comes with the request
@@ -216,17 +234,125 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 {
 	std::cout << "Request:" << request << ";" << std::endl;
 
+	// Handle login request.
 	if (request == std::string("/login")) {
-		return std::string("<p>Login request detected</p>");
+		std::string password, username;
+
+		username = ParseField(parameters, "username");
+		password = ParseField(parameters, "password");
+
+		std::cout << "Username:[" << username << "]"
+			<< " Password:[" << password << "]"
+			<< std::endl;
+
+		if (username.empty() && password.empty()) {
+			return std::string("<p>Login Failed<br />Username and password missing</p>");
+		}
+
+		if (username.empty()) {
+			return std::string("<p>Login Failed<br />Username missing</p>");
+		}
+
+		if (password.empty()) {
+			return std::string("<p>Login Failed<br />Password missing</p>");
+		}
+
+		// Handle login.
+
+		int Result = accountManager.Login(username, password);
+		
+		if (Result == 0) {
+			return std::string("<p>Login successful</p>");
+		}
+
+		if (Result == 1) {
+			return std::string("<p>Login failed<br />Incorrect password</p>");
+		}
+
+		if (Result == 2) {
+			return std::string("<p>Login failed<br />Account does not exist</p>");
+		}
+
+		if (Result == -1) {
+			return std::string("<p>Server error: 1</p>");
+		}
+
+		if (Result == -2) {
+			return std::string("<p>Server error: 2</p>");
+		}
+
+		return std::string("<p>Login failed<br />Unspecified error</p>");
 	}
+
+	// Handle register request.
 	else if (request == std::string("/register")) {
-		return std::string("<p>Register request detected</p>");
+		std::string email, password1, password2, username;
+
+		username = ParseField(parameters, "username");
+		email = ParseField(parameters, "email");
+		password1 = ParseField(parameters, "password1");
+		password2 = ParseField(parameters, "password2");
+
+		std::cout << "Username:[" << username << "]"
+			<< " Email:[" << email << "]"
+			<< " Password1:[" << password1 << "]"
+			<< " Password2:[" << password2 << "]"
+			<< std::endl;
+
+		if (username.empty() || email.empty() || password1.empty() || password2.empty()) {
+			std::string buffer = "<p>Resgister Failed<br />";
+			
+			if (username.empty()) buffer.append("username ");
+			if (username.empty()) buffer.append("email ");
+			if (username.empty()) buffer.append("pwd1 ");
+			if (username.empty()) buffer.append("pw2 ");
+
+			buffer.append("is missing");
+
+			return buffer;
+		}
+
+
+		// Handle register
+
+		if (password1 != password2) {
+			return std::string("<p>Error<br />Passwords do not match</p>");
+		}
+
+		int Result = accountManager.Register(username, password1, email);
+
+		if (Result == 0) {
+			return std::string("<p>Register successful<br />You can now login to the server</p>");
+		}
+
+		if (Result == 1) {
+			return std::string("<p>Register failed<br />Username has already been registered</p>");
+		}
+
+		if (Result == 2) {
+			return std::string("<p>Register failed<br />Email address has already been registered</p>");
+		}
+
+		if (Result == -1) {
+			return std::string("<p>Server error: 1</p>");
+		}
+
+		if (Result == -2) {
+			return std::string("<p>Server error: 2</p>");
+		}
+
+		return std::string("<p>Register failed<br />Unspecified error</p>");
+		
 	}
+
+	// Handle forgot request.
 	else if (request == std::string("/forgot")) {
-		return std::string("<p>Forgot request detected</p>");
+		return std::string("<p>Forgot request not supported by server</p>");
 	}
+
+
 	else {
-		return std::string("<p>Login request detected</p>");
+		return std::string("<p>Error: Unknown request</p>");
 	}
 
 	return std::string();

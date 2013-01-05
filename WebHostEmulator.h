@@ -1,4 +1,6 @@
 #pragma once
+#include "AccountManager.h"
+
 class WebHostEmulator
 {
 public:
@@ -8,6 +10,8 @@ public:
 	int start(const std::string &port);
 
 private:
+	AccountManager accountManager;
+
 	SOCKET ListenSocket;
 	bool KeepAlive;
 	std::mutex m_KeepAlive;
