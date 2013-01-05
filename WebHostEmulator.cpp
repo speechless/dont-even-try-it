@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "WebHostEmulator.h"
 
+#define __DEBUG // Comment this out to disable debug text in console
 
 WebHostEmulator::WebHostEmulator(void) : Root("http/")
 {
@@ -14,9 +15,8 @@ WebHostEmulator::~WebHostEmulator(void)
 
 // @brief: starts webserver
 // @param[in]: port - port that the server listens on
-int WebHostEmulator::start(const std::string &port)
+int WebHostEmulator::start(std::string port)
 {
-	WSADATA wsaData;
 	int iResult;
 
 	ListenSocket = INVALID_SOCKET;
@@ -28,13 +28,6 @@ int WebHostEmulator::start(const std::string &port)
 	struct addrinfo *result = NULL;
 	struct addrinfo hints;
 
-	// Initialize Winsock
-	iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
-	if (iResult != 0) {
-		printf("WSAStartup failed with error: %d\n", iResult);
-		return 1;
-	}
-
 	ZeroMemory(&hints, sizeof(hints));
 	hints.ai_family = AF_INET;
 	hints.ai_socktype = SOCK_STREAM;
@@ -44,7 +37,9 @@ int WebHostEmulator::start(const std::string &port)
 	// Resolve the server address and por
 	iResult = getaddrinfo(NULL, port.c_str(), &hints, &result);
 	if ( iResult != 0 ) {
+#ifdef __DEBUG
 		printf("getaddrinfo failed with error: %d\n", iResult);
+#endif
 		WSACleanup();
 		return 1;
 	}
@@ -52,7 +47,9 @@ int WebHostEmulator::start(const std::string &port)
 	// Create a SOCKET for connecting to server
 	ListenSocket = socket(result->ai_family, result->ai_socktype, result->ai_protocol);
 	if (ListenSocket == INVALID_SOCKET) {
+#ifdef __DEBUG
 		printf("socket failed with error: %ld\n", WSAGetLastError());
+#endif
 		freeaddrinfo(result);
 		WSACleanup();
 		return 1;
@@ -60,7 +57,9 @@ int WebHostEmulator::start(const std::string &port)
 
 	iResult = bind( ListenSocket, result->ai_addr, (int)result->ai_addrlen);
 	if (iResult == SOCKET_ERROR) {
+#ifdef __DEBUG
 		printf("bind failed with error: %d\n", WSAGetLastError());
+#endif
 		freeaddrinfo(result);
 		closesocket(ListenSocket);
 		WSACleanup();
@@ -71,7 +70,9 @@ int WebHostEmulator::start(const std::string &port)
 
 	iResult = listen(ListenSocket, SOMAXCONN);
 	if (iResult == SOCKET_ERROR) {
+#ifdef __DEBUG
 		printf("listen failed with error: %d\n", WSAGetLastError());
+#endif
 		closesocket(ListenSocket);
 		WSACleanup();
 		return 1;
@@ -87,6 +88,9 @@ int WebHostEmulator::start(const std::string &port)
 // @brief: handles listening of webserver
 void WebHostEmulator::HandleListen()
 {
+#ifdef __DEBUG
+	printf("Server listening started\n");
+#endif
 	m_KeepAlive.lock();
 	while (KeepAlive)
 	{
@@ -114,49 +118,76 @@ void WebHostEmulator::HandleListen()
 // @brief: handles webclient
 // @param[in]: socket - socket that client is connected on
 // @param[in]: ip_addr - ip address of the client
-void WebHostEmulator::HandleClient(SOCKET* socket, const std::string ip_addr)
+void WebHostEmulator::HandleClient(SOCKET* socket, const std::string &ip_addr)
 {
-	// Recieve
-	std::string Received;
-	Received.resize(8192);
+#ifdef __DEBUG
+	static int ThreadCounter = 0;
+	const int ThreadID = ThreadCounter++;
+	printf("Thread %i started\n", ThreadID);
+#endif
+
+	while (1) {
+		// Recieve
+		std::string Received;
+		Received.resize(8192);
 	
-	int iResult = recv(*socket, &Received[0], Received.length(), 0);
+		int iResult = recv(*socket, &Received[0], Received.length(), 0);
 
-	Received.resize(iResult);
+		if (iResult <= 0) {
+#ifdef __DEBUG
+			printf("Thread %i ended\n", ThreadID);
+#endif
+			closesocket(*socket);
+			delete socket;
+			return;
+		}
 
-	std::cout << Received << std::endl;
+		Received.resize(iResult);
 
-	// Send
-	size_t found;
-	std::string Body, ContentLength, ContentType, Header, Response;
+#ifdef __DEBUG
+		printf("Received Message:-----\n%s\nEnd Received-----\n\n", Received.c_str());
+#endif
 
-	found = Received.find("GET");
-	if (found == 0) {
-		size_t start = Received.find("/");
-		size_t end = Received.find(" ", start);
+		// Send
+		size_t found;
+		std::string Body, ContentLength, ContentType, Header, Response;
 
-		ContentType = GetReq(std::string(Received, start, end - start), Body);
-		Header = BuildHeader(Body, 200, ContentType, false);
+		found = Received.find("GET");
+		if (found == 0) {
+			size_t start = Received.find("/");
+			size_t end = Received.find(" ", start);
 
-		Response = Header + Body;
+			ContentType = GetReq(std::string(Received, start, end - start), Body);
+			Header = BuildHeader(Body, 200, ContentType, true);
 
-		iResult = send(*socket, Response.c_str(), Response.size(), 0);
+			Response = Header + Body;
+
+			iResult = send(*socket, Response.c_str(), Response.size(), 0);
+		}
+
+		found = Received.find("POST");
+		if (found == 0) {
+
+			size_t start = Received.find("/");
+			size_t end = Received.find(" ", start);
+
+			std::string Result = PostReq(
+				std::string(Received, start, end - start),
+				GetBody(Received)
+				);
+
+			Body = BuildResult(Result, std::string("result.html"));
+			Header = BuildHeader(Body, 200, ContentType, false);
+
+			Response = Header + Body;
+
+			iResult = send(*socket, Response.c_str(), Response.size(), 0);
+		}
 	}
 
-	found = Received.find("POST");
-	if (found == 0) {
-		size_t start = Received.find("/");
-		size_t end = Received.find(" ", start);
-
-		std::string Result = PostReq(std::string(Received, start, end - start), GetBody(Received));
-
-		Body = BuildResult(Result, std::string("result.html"));
-		Header = BuildHeader(Body, 200, ContentType, false);
-
-		Response = Header + Body;
-
-		iResult = send(*socket, Response.c_str(), Response.size(), 0);
-	}
+#ifdef __DEBUG
+	printf("Thread %i ended\n", ThreadID);
+#endif
 
 	closesocket(*socket);
 
@@ -177,7 +208,6 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 	GetPage(page, content);
 
 	if (page == std::string("/")) {
-		std::cout << "text/html" << std::endl;
 		return std::string("text/html");
 	}
 
@@ -189,20 +219,16 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 
 	std::string extension(page, found, page.length() - found);
 
-	std::cout << "detected ext:" << extension << std::endl;
 
 	if (extension == std::string(".html")) {
-		std::cout << "text/html" << std::endl;
 		return std::string("text/html");
 	}
 
 	else if (extension == std::string(".css")) {
-		std::cout << "text/css" << std::endl;
 		return std::string("text/css");
 	}
 
 	else if (extension == std::string(".js")) {
-		std::cout << "text/javascript" << std::endl;
 		return std::string("text/javascript");
 	}
 
@@ -210,10 +236,10 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 }
 
 
-std::string ParseField(const std::string data, const std::string field)
+std::string WebHostEmulator::ParseField(const std::string &data, const std::string &field)
 {
 	size_t start = data.find(field + "=");
-	size_t end = data.find("&", start);
+	size_t end = data.find("&", start + 1);
 	
 	if (start == std::string::npos) {
 		return std::string();
@@ -232,8 +258,6 @@ std::string ParseField(const std::string data, const std::string field)
 // @param[in]: parameters - parameters that comes with the request
 std::string WebHostEmulator::PostReq(const std::string &request, const std::string &parameters)
 {
-	std::cout << "Request:" << request << ";" << std::endl;
-
 	// Handle login request.
 	if (request == std::string("/login")) {
 		std::string password, username;
@@ -241,9 +265,9 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 		username = ParseField(parameters, "username");
 		password = ParseField(parameters, "password");
 
-		std::cout << "Username:[" << username << "]"
-			<< " Password:[" << password << "]"
-			<< std::endl;
+#ifdef __DEBUG
+		printf("Login-> Username:[%s] Password:[%s]\n", username.c_str(), password.c_str());
+#endif
 
 		if (username.empty() && password.empty()) {
 			return std::string("<p>Login Failed<br />Username and password missing</p>");
@@ -260,7 +284,7 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 		// Handle login.
 
 		int Result = accountManager.Login(username, password);
-		
+
 		if (Result == 0) {
 			return std::string("<p>Login successful</p>");
 		}
@@ -293,23 +317,22 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 		password1 = ParseField(parameters, "password1");
 		password2 = ParseField(parameters, "password2");
 
-		std::cout << "Username:[" << username << "]"
-			<< " Email:[" << email << "]"
-			<< " Password1:[" << password1 << "]"
-			<< " Password2:[" << password2 << "]"
-			<< std::endl;
+#ifdef __DEBUG
+		printf("Register-> Username:[%s] Email:[%s] Password1:[%s] Password2:[%s]\n",
+			username.c_str(), email.c_str(), password1.c_str(), password2.c_str());
+#endif
 
 		if (username.empty() || email.empty() || password1.empty() || password2.empty()) {
-			std::string buffer = "<p>Resgister Failed<br />";
+			std::string ErrorReply = "<p>Resgister Failed<br />";
 			
-			if (username.empty()) buffer.append("username ");
-			if (username.empty()) buffer.append("email ");
-			if (username.empty()) buffer.append("pwd1 ");
-			if (username.empty()) buffer.append("pw2 ");
+			if (username.empty()) ErrorReply.append("username ");
+			if (username.empty()) ErrorReply.append("email ");
+			if (username.empty()) ErrorReply.append("pwd1 ");
+			if (username.empty()) ErrorReply.append("pw2 ");
 
-			buffer.append("is missing");
+			ErrorReply.append("is missing");
 
-			return buffer;
+			return ErrorReply;
 		}
 
 
@@ -403,7 +426,7 @@ int WebHostEmulator::GetPage(const std::string &page, std::string &content)
 // @param[in]: ContentType - ContentType to be placed into header
 // @param[in]: AllowCache - adds cache to header
 // @return: custom built header.
-std::string WebHostEmulator::BuildHeader (const std::string &content, const int StatusCode, const std::string ContentType, const bool AllowCache)
+std::string WebHostEmulator::BuildHeader (const std::string &content, const int &StatusCode, const std::string &ContentType, const bool &AllowCache)
 {
 	std::stringstream ss;
 	std::string Header, status_code, content_length;
@@ -441,7 +464,9 @@ std::string WebHostEmulator::GetBody(const std::string &message)
 		return std::string();
 	}
 
-	return std::string (message, pos + std::string("\r\n\r\n").length(), message.length() - pos);
+	std::string body = std::string (message, pos + std::string("\r\n\r\n").length(), message.length() - pos);
+
+	return body;
 }
 
 

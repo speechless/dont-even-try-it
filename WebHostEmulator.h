@@ -7,7 +7,7 @@ public:
 	WebHostEmulator(void);
 	~WebHostEmulator(void);
 
-	int start(const std::string &port);
+	int start(const std::string port);
 
 private:
 	AccountManager accountManager;
@@ -19,12 +19,14 @@ private:
 	std::string Root;
 
 	void HandleListen();
-	void HandleClient(SOCKET* socket, const std::string ip_addr);
+	void HandleClient(SOCKET* socket, const std::string &ip_addr);
 
 	int GetPage(const std::string &page, std::string &content);
 	std::string GetBody(const std::string &message);
 
-	std::string BuildHeader (const std::string &content, const int StatusCode, const std::string ContentType, const bool AllowCache);
+	std::string ParseField(const std::string &data, const std::string &field);
+
+	std::string BuildHeader (const std::string &content, const int &StatusCode, const std::string &ContentType, const bool &AllowCache);
 	std::string BuildResult (const std::string &message, const std::string &page);
 
 	std::string GetReq(const std::string &page, std::string &content);
