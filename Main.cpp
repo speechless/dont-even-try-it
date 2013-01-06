@@ -2,13 +2,14 @@
 
 #include "deti.pb.h"
 #include "Firewall.h"
+#include "LoginDatabase.h"
 #include "WebHostEmulator.h"
+
 
 int main(int argc, char * argv[])
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
-	// Initialize Winsock
 	WSADATA wsaData;
 
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
@@ -19,10 +20,13 @@ int main(int argc, char * argv[])
 		return 1;
 	}
 
-	WebHostEmulator emu;
 	Firewall firewall;
+	LoginDatabase login;
+	WebHostEmulator emu;
+	
 	emu.start(std::string("99"));
 	firewall.start("98", "127.0.0.1", "25566");
+	login.init(30);
 
 	while(1)
 	{

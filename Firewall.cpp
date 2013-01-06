@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Firewall.h"
 
-#define __DEBUG
+//#define __DEBUG
 
 Firewall::Firewall(void)
 {
