@@ -4,8 +4,6 @@
 #include "Firewall.h"
 #include "WebHostEmulator.h"
 
-#define __FIREWALL
-
 int main(int argc, char * argv[])
 {
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
@@ -23,8 +21,8 @@ int main(int argc, char * argv[])
 
 	WebHostEmulator emu;
 	Firewall firewall;
-	emu.start(std::string("100"));	
-	firewall.start("99", "127.0.0.1", "25566");
+	emu.start(std::string("99"));
+	firewall.start("98", "127.0.0.1", "25566");
 
 	while(1)
 	{

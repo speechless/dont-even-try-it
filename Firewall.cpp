@@ -3,7 +3,6 @@
 
 #define __DEBUG
 
-
 Firewall::Firewall(void)
 {
 }
@@ -82,6 +81,7 @@ int Firewall::start(const std::string ListenPort, const std::string ForwardAddre
 
 	return 0;
 }
+
 
 void Firewall::HandleListen(const std::string ForwardAddress, const std::string ForwardPort)
 {
@@ -167,6 +167,7 @@ void Firewall::HandleListen(const std::string ForwardAddress, const std::string 
 	return;
 }
 
+
 void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const std::string IP_Addr)
 {
 #ifdef __DEBUG
@@ -175,7 +176,14 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 	printf("Client thread %i started\n", ThreadID);
 #endif
 
-	while (1) {
+	std::string Handshake;
+	Handshake.reserve(512);
+	bool Authorised = false;
+
+	m_KeepAlive.lock();
+	while (KeepAlive) {
+		m_KeepAlive.unlock();
+
 		std::string RecvBuffer;
 		RecvBuffer.resize(8192);
 
@@ -186,11 +194,35 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 			printf("Client thread %i ended\n", ThreadID);
 #endif
 			closesocket(*ClientSocket);
+			closesocket(*ServerSocket);
 			delete ClientSocket;
 			return;
 		}
 
 		RecvBuffer.resize(iResult);
+
+		if (Authorised == false) {
+			Handshake.append(RecvBuffer);
+			std::string username;
+			int uResult = GetUsername(Handshake, username);
+			if (uResult == 0) {
+#ifdef __DEBUG
+				printf("User:[%s] connected on thread:[%i] using IP:[%s]\n", username.c_str(), ThreadID, IP_Addr.c_str());
+#endif
+				Authorised = true;
+			}
+			else if (uResult == -1) {
+				Authorised = true;
+			}
+			else if (Handshake.length() > 300) {
+#ifdef __DEBUG
+				printf("No handshake packet found on thread:[%i] shutting down connection.\n",ThreadID);
+#endif
+				closesocket(*ClientSocket);
+				closesocket(*ServerSocket);
+				delete ClientSocket;
+			}
+		}
 
 		iResult = send(*ServerSocket, &RecvBuffer[0], RecvBuffer.length(), 0);
 		if (iResult == SOCKET_ERROR) {
@@ -203,17 +235,22 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 			delete ClientSocket;
 			return;
 		}
+
+		m_KeepAlive.lock();
 	}
+	m_KeepAlive.unlock();
 
 #ifdef __DEBUG
 	printf("Client thread %i ended\n", ThreadID);
 #endif
 
 	closesocket(*ClientSocket);
+	closesocket(*ServerSocket);
 	delete ClientSocket;
 
 	return;
 }
+
 
 void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 {
@@ -223,7 +260,10 @@ void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 	printf("Server thread %i started\n", ThreadID);
 #endif
 
-	while (1) {
+	m_KeepAlive.lock();
+	while (KeepAlive) {
+		m_KeepAlive.unlock();
+
 		std::string RecvBuffer;
 		RecvBuffer.resize(8192);
 
@@ -234,6 +274,7 @@ void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 			printf("Server thread %i ended\n", ThreadID);
 #endif
 			closesocket(*ServerSocket);
+			closesocket(*ClientSocket);
 			delete ServerSocket;
 			return;
 		}
@@ -251,13 +292,46 @@ void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 			delete ServerSocket;
 			return;
 		}
+
+		m_KeepAlive.lock();
 	}
+	m_KeepAlive.unlock();
 
 #ifdef __DEBUG
 	printf("Server thread %i ended\n", ThreadID);
 #endif
 
 	closesocket(*ServerSocket);
+	closesocket(*ClientSocket);
 	delete ServerSocket;
 	return;
+}
+
+
+int Firewall::GetUsername(const std::string data, std::string & username)
+{
+	if (data.length() < 10) {
+		return 1; // Not enough data.
+	}
+
+	if (data.at(0) != 0x02) {
+		return -1; // not correct packet.
+	}
+
+	// Get username
+	unsigned int StringLen = ((unsigned char)data.at(2) << 8) + ((unsigned char)data.at(3));
+
+	if (StringLen*2 + 4 > data.length()) {
+		return 1; // Not enought data.
+	}
+
+	username.clear();
+	username.reserve(StringLen);
+
+	for (unsigned int i = 4; i < StringLen*2 + 4; i+=2)
+	{
+		username.push_back(((unsigned char)data.at(i) << 8) + (unsigned char)data.at(i+1));
+	}
+
+	return 0; // Username found.
 }

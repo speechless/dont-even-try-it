@@ -12,6 +12,7 @@ private:
 	void HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const std::string IP_Addr);
 	void HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket);
 
+	int GetUsername(const std::string data, std::string & username);
 private:
 	SOCKET ListenSocket;
 	bool KeepAlive;
