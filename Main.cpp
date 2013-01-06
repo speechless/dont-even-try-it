@@ -1,8 +1,10 @@
 #include "stdafx.h"
 
 #include "deti.pb.h"
+#include "Firewall.h"
 #include "WebHostEmulator.h"
 
+#define __FIREWALL
 
 int main(int argc, char * argv[])
 {
@@ -10,6 +12,7 @@ int main(int argc, char * argv[])
 
 	// Initialize Winsock
 	WSADATA wsaData;
+
 	int iResult = WSAStartup(MAKEWORD(2,2), &wsaData);
 	if (iResult != 0) {
 #ifdef __DEBUG
@@ -19,8 +22,9 @@ int main(int argc, char * argv[])
 	}
 
 	WebHostEmulator emu;
-
-	emu.start(std::string("99"));
+	Firewall firewall;
+	emu.start(std::string("100"));	
+	firewall.start("99", "127.0.0.1", "25566");
 
 	while(1)
 	{

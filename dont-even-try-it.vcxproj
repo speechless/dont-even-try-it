@@ -84,6 +84,7 @@
   <ItemGroup>
     <ClCompile Include="AccountManager.cpp" />
     <ClCompile Include="deti.pb.cc" />
+    <ClCompile Include="Firewall.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -94,6 +95,7 @@
   <ItemGroup>
     <ClInclude Include="AccountManager.h" />
     <ClInclude Include="deti.pb.h" />
+    <ClInclude Include="Firewall.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="WebHostEmulator.h" />
   </ItemGroup>

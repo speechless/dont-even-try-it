@@ -30,6 +30,9 @@
     <ClCompile Include="deti.pb.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Firewall.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WebHostEmulator.h">
@@ -42,6 +45,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="deti.pb.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Firewall.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
