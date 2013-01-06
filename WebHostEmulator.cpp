@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "WebHostEmulator.h"
 
-#define __DEBUG // Comment this out to disable debug text in console
+// #define __DEBUG // Comment this out to disable debug text in console
 
 WebHostEmulator::WebHostEmulator(void) : Root("http/")
 {
@@ -126,12 +126,15 @@ void WebHostEmulator::HandleClient(SOCKET* socket, const std::string &ip_addr)
 	printf("Thread %i started\n", ThreadID);
 #endif
 
+	std::queue <std::string> RecvQueue;
+	std::string Received, overflow;
+
 	while (1) {
 		// Recieve
-		std::string Received;
-		Received.resize(8192);
+		std::string RecvBuffer;
+		RecvBuffer.resize(8192);
 	
-		int iResult = recv(*socket, &Received[0], Received.length(), 0);
+		int iResult = recv(*socket, &RecvBuffer[0], RecvBuffer.length(), 0);
 
 		if (iResult <= 0) {
 #ifdef __DEBUG
@@ -142,8 +145,12 @@ void WebHostEmulator::HandleClient(SOCKET* socket, const std::string &ip_addr)
 			return;
 		}
 
-		Received.resize(iResult);
+		RecvBuffer.resize(iResult);
 
+		if (parseHTTP (RecvBuffer, Received, overflow) != 0) {
+			continue;
+		}
+		
 #ifdef __DEBUG
 		printf("Received Message:-----\n%s\nEnd Received-----\n\n", Received.c_str());
 #endif
@@ -183,6 +190,8 @@ void WebHostEmulator::HandleClient(SOCKET* socket, const std::string &ip_addr)
 
 			iResult = send(*socket, Response.c_str(), Response.size(), 0);
 		}
+
+		Received.clear();
 	}
 
 #ifdef __DEBUG
@@ -506,4 +515,60 @@ std::string WebHostEmulator::BuildResult (const std::string &message, const std:
 	std::string post(content, found + 1, content.length() - found+1);
 
 	return std::string(pre + message + post);
+}
+
+
+// @brief: parses defragments fragmented HTTP messages
+// @param[in]: recvbuf- fragmented http message
+// @param[out]: message - defragmented http message
+// @param[none]: overflow - function personal storage
+// @return: 0: message ready to be read
+// @note: when function returns 0, move the message somewhere else, then clear it.
+//			NEVER TOUCH overflow or this will break...
+int WebHostEmulator::parseHTTP (const std::string recvbuf, std::string &message, std::string &overflow)
+{
+	message.append(overflow + recvbuf);
+	overflow.clear();
+
+	size_t delimiter = message.find("\r\n\r\n");
+	
+	if (delimiter != std::string::npos) {
+
+		size_t cont_beg = message.find("Content-Length: ");
+
+		if (cont_beg != std::string::npos)
+		{
+			size_t cont_end = message.find("\r\n", cont_beg);
+			
+			std::stringstream ss;
+			ss << std::string (message,	cont_beg + std::string("Content-Length: ").length(),
+				cont_end - cont_beg - std::string("Content-Length: ").length());
+
+			int rawData;
+			ss >> rawData;
+			rawData;
+
+			if (message.length() < delimiter + rawData) {
+				return 2; // Reading data in raw mode.
+			}
+			else {
+				if (message.length() == delimiter + std::string("\r\n\r\n").length() + rawData - 1) {
+					overflow.clear();
+				}
+				else {
+					overflow = message.substr(delimiter + std::string("\r\n\r\n").length() + rawData);
+				}
+				message.resize(delimiter + std::string("\r\n\r\n").length() + rawData);
+				
+				return 0; // Message complete.
+			}
+		}
+		else {
+			overflow = message.substr(delimiter + std::string("\r\n\r\n").length());
+			message.resize(delimiter + std::string("\r\n\r\n").length());
+			return 0; // Message complete.
+		}
+	}
+
+	return 1; // Reading data in delimiter mode.
 }

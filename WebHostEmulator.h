@@ -25,6 +25,7 @@ private:
 	std::string GetBody(const std::string &message);
 
 	std::string ParseField(const std::string &data, const std::string &field);
+	int parseHTTP (const std::string recvbuf, std::string &message, std::string &overflow);
 
 	std::string BuildHeader (const std::string &content, const int &StatusCode, const std::string &ContentType, const bool &AllowCache);
 	std::string BuildResult (const std::string &message, const std::string &page);
