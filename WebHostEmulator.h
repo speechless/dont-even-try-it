@@ -19,7 +19,7 @@ private:
 	std::string Root;
 
 	void HandleListen();
-	void HandleClient(SOCKET* socket, const std::string &ip_addr);
+	void HandleClient(SOCKET* socket, const std::string ip_addr);
 
 	int GetPage(const std::string &page, std::string &content);
 	std::string GetBody(const std::string &message);

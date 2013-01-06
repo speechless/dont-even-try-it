@@ -106,6 +106,9 @@ void WebHostEmulator::HandleListen()
 			std::thread thread(&WebHostEmulator::HandleClient, this, ClientSocket, std::string(inet_ntoa(client_info.sin_addr)));
 			thread.detach();
 		}
+		else {
+			delete ClientSocket;
+		}
 
 		m_KeepAlive.lock();
 	}
@@ -118,7 +121,7 @@ void WebHostEmulator::HandleListen()
 // @brief: handles webclient
 // @param[in]: socket - socket that client is connected on
 // @param[in]: ip_addr - ip address of the client
-void WebHostEmulator::HandleClient(SOCKET* socket, const std::string &ip_addr)
+void WebHostEmulator::HandleClient(SOCKET* socket, const std::string ip_addr)
 {
 #ifdef __DEBUG
 	static int ThreadCounter = 0;
