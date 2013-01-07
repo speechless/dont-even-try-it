@@ -1,4 +1,6 @@
 #include "stdafx.h"
+
+#include "Config.h"
 #include "WebHostEmulator.h"
 
 // #define __DEBUG // Comment this out to disable debug text in console
@@ -301,7 +303,7 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 
 		if (Result == 0) {
 			loginDatabase->AddUser(username, ip_addr);
-			return std::string("<p>Login successful</p>");
+			return std::string("<p>Login successful<br /><br />" + GetLoginMessage() + "</p>");
 		}
 
 		if (Result == 1) {

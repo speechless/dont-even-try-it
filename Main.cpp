@@ -1,13 +1,26 @@
 #include "stdafx.h"
 
+#include "Config.h"
 #include "deti.pb.h"
 #include "Firewall.h"
 #include "LoginDatabase.h"
 #include "WebHostEmulator.h"
 
-
+#ifndef __DEBUG
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
+#else
 int main(int argc, char * argv[])
+#endif
 {
+	std::string http_port, deti_port, mc_addr, mc_port;
+	
+	if (GetConfig(http_port, deti_port, mc_addr, mc_port) != 0) {
+#ifdef __DEBUG
+		printf("Configuration missing.\n");
+#endif
+		return 1;
+	}
+
 	GOOGLE_PROTOBUF_VERIFY_VERSION;
 
 	WSADATA wsaData;
@@ -25,8 +38,8 @@ int main(int argc, char * argv[])
 	WebHostEmulator emu;
 	
 	login.init(300);
-	emu.start(std::string("99"), &login);
-	firewall.start("98", "127.0.0.1", "25566", &login);
+	emu.start(std::string(http_port), &login);
+	firewall.start(deti_port, mc_addr, mc_port, &login);
 
 	while(1)
 	{
