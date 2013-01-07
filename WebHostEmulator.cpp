@@ -248,6 +248,11 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 		return std::string("text/javascript");
 	}
 
+	else if (extension == std::string(".ico")) {
+		printf("this happened\n");
+		return std::string("image/x-icon");
+	}
+
 	return std::string();
 }
 
