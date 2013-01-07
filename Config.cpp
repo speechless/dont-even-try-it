@@ -77,3 +77,28 @@ std::string GetLoginMessage()
 
 	return std::string();
 }
+
+std::string GetAdminPassword()
+{
+	std::fstream file;
+	file.open("config/deti.properties", std::ios::in);
+
+	if (!file.good()) {
+		file.close();
+		return std::string();
+	}
+
+	while (!file.eof())
+	{
+		std::string buffer;
+		buffer.resize(512);
+		file.getline(&buffer[0],buffer.size());
+		size_t found = buffer.find("admin-pass=");
+		if (found == 0) {
+			file.close();
+			return (buffer.substr(std::string("admin-pass=").length()));
+		}
+	}
+
+	return std::string();
+}

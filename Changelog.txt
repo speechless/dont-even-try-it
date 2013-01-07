@@ -1,0 +1,8 @@
+Version: 0.0.0.1
+
+*Added webserver support for changing
+password of exsiting account
+
+*Added webserver support for deleting accounts
+
+*Added admin password to "server.properties"
