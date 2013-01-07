@@ -1,6 +1,7 @@
 #include "stdafx.h"
 #include "LoginDatabase.h"
 
+//#define __DEBUG  // Comment this out to disable debug text in console
 
 LoginDatabase::LoginDatabase(void)
 {
@@ -37,9 +38,14 @@ int LoginDatabase::deinit()
 
 int LoginDatabase::AddUser(std::string username, const std::string ip_address)
 {
+
 	std::transform(username.begin(), username.end(), username.begin(), ::tolower); 
 	std::lock_guard<std::mutex> m(m_database);
 
+#ifdef __DEBUG
+	printf("Added:%s\n", username.c_str());
+#endif
+	
 	for (std::list <session>::iterator i = database.begin(); i != database.end(); i++)
 	{
 		if (i->username == username)
@@ -58,14 +64,11 @@ int LoginDatabase::AddUser(std::string username, const std::string ip_address)
 
 	database.push_back(NewSession);
 
-#ifdef __DEBUG
-	printf("Added:%s\n", username.c_str());
-#endif
-
 	return 0;
 }
 
 
+// @return: 0 if succuessful, 1 if failed.
 int LoginDatabase::PollUser(std::string username, std::string &ip_address)
 {
 	std::transform(username.begin(), username.end(), username.begin(), ::tolower); 

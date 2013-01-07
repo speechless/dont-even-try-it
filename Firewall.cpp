@@ -1,7 +1,7 @@
 #include "stdafx.h"
 #include "Firewall.h"
 
-//#define __DEBUG
+//#define __DEBUG  // Comment this out to disable debug text in console
 
 Firewall::Firewall(void)
 {
@@ -13,8 +13,9 @@ Firewall::~Firewall(void)
 }
 
 
-int Firewall::start(const std::string ListenPort, const std::string ForwardAddress, const std::string ForwardPort)
+int Firewall::start(const std::string ListenPort, const std::string ForwardAddress, const std::string ForwardPort, LoginDatabase *database)
 {
+	loginDatabase = database;
 	int iResult;
 
 	ListenSocket = INVALID_SOCKET;
@@ -209,7 +210,31 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 #ifdef __DEBUG
 				printf("User:[%s] connected on thread:[%i] using IP:[%s]\n", username.c_str(), ThreadID, IP_Addr.c_str());
 #endif
-				Authorised = true;
+				std::string pollAddress;
+				if (loginDatabase->PollUser(username, pollAddress) == 0) {
+					if (pollAddress == IP_Addr) {
+						Authorised = true;
+						loginDatabase->RemoveUser(username);
+					}
+					else {
+						closesocket(*ClientSocket);
+						closesocket(*ServerSocket);
+						delete ClientSocket;
+#ifdef __DEBUG
+						printf("Client thread %i ended # Reason: ip address does not match\n", ThreadID);
+#endif
+						return;
+					}
+				}
+				else {
+					closesocket(*ClientSocket);
+					closesocket(*ServerSocket);
+					delete ClientSocket;
+#ifdef __DEBUG
+					printf("Client thread %i ended # Reason: user not authenticated\n", ThreadID);
+#endif
+					return;
+				}
 			}
 			else if (uResult == -1) {
 				Authorised = true;

@@ -24,9 +24,9 @@ int main(int argc, char * argv[])
 	LoginDatabase login;
 	WebHostEmulator emu;
 	
-	emu.start(std::string("99"));
-	firewall.start("98", "127.0.0.1", "25566");
-	login.init(30);
+	login.init(300);
+	emu.start(std::string("99"), &login);
+	firewall.start("98", "127.0.0.1", "25566", &login);
 
 	while(1)
 	{

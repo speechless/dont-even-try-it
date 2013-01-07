@@ -10,6 +10,10 @@ a {
 
 body {
 	background:#E1FFFF;
+	background-image:url('background.jpg');
+	background-repeat: no-repeat;
+	background-position: center top;
+
 }
 
 .button {
@@ -39,10 +43,13 @@ form {
 	top: 500px;
 }
 
+.logo {
+	width: 600px;
+}
+
 .PageContainer {
-	background-image:url('background.png');
 	border-radius: 30px;
-	height: 618px;
+	height: 600px;
 	margin-left: auto;
 	margin-right: auto;
 	text-align: center;

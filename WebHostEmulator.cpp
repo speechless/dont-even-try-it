@@ -15,8 +15,9 @@ WebHostEmulator::~WebHostEmulator(void)
 
 // @brief: starts webserver
 // @param[in]: port - port that the server listens on
-int WebHostEmulator::start(std::string port)
+int WebHostEmulator::start(std::string port, LoginDatabase *database)
 {
+	loginDatabase = database;
 	int iResult;
 
 	ListenSocket = INVALID_SOCKET;
@@ -183,7 +184,8 @@ void WebHostEmulator::HandleClient(SOCKET* socket, const std::string ip_addr)
 
 			std::string Result = PostReq(
 				std::string(Received, start, end - start),
-				GetBody(Received)
+				GetBody(Received),
+				ip_addr
 				);
 
 			Body = BuildResult(Result, std::string("result.html"));
@@ -268,7 +270,7 @@ std::string WebHostEmulator::ParseField(const std::string &data, const std::stri
 // @brief: handles post request
 // @param[in]: request - type of request: /login,/register,/forgot
 // @param[in]: parameters - parameters that comes with the request
-std::string WebHostEmulator::PostReq(const std::string &request, const std::string &parameters)
+std::string WebHostEmulator::PostReq(const std::string &request, const std::string &parameters, const std::string ip_addr)
 {
 	// Handle login request.
 	if (request == std::string("/login")) {
@@ -298,6 +300,7 @@ std::string WebHostEmulator::PostReq(const std::string &request, const std::stri
 		int Result = accountManager.Login(username, password);
 
 		if (Result == 0) {
+			loginDatabase->AddUser(username, ip_addr);
 			return std::string("<p>Login successful</p>");
 		}
 

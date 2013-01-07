@@ -1,11 +1,13 @@
 #pragma once
+#include "LoginDatabase.h"
+
 class Firewall
 {
 public:
 	Firewall(void);
 	~Firewall(void);
 
-	int start(const std::string ListenPort, const std::string ForwardAddress, const std::string ForwardPort);
+	int start(const std::string ListenPort, const std::string ForwardAddress, const std::string ForwardPort, LoginDatabase *database);
 private:
 	void HandleListen(const std::string ForwardAddress, const std::string ForwardPort);
 
@@ -13,8 +15,11 @@ private:
 	void HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket);
 
 	int GetUsername(const std::string data, std::string & username);
+
 private:
 	SOCKET ListenSocket;
 	bool KeepAlive;
 	std::mutex m_KeepAlive;
+
+	LoginDatabase *loginDatabase;
 };
