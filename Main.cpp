@@ -1,5 +1,6 @@
 #include "stdafx.h"
 
+
 #include "Config.h"
 #include "deti.pb.h"
 #include "Firewall.h"
@@ -49,6 +50,6 @@ int main(int argc, char * argv[])
 
 	WSACleanup();
 	google::protobuf::ShutdownProtobufLibrary();
-
+	
 	return 0;
 }

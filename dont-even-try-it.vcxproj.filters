@@ -1,69 +1,83 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="Source Files">
+    <Filter Include="Login Database">
+      <UniqueIdentifier>{5a1723c0-0afc-464b-aed8-e8a80dce7c5e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Account Manager">
+      <UniqueIdentifier>{59a421f9-8fbe-4465-b257-8864039f0f79}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Configuration">
+      <UniqueIdentifier>{31f35772-e051-4fe6-b332-df099be9cf2e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Google Protobuf">
+      <UniqueIdentifier>{304b6a73-d81f-411a-8ec6-503501552619}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Web Host Emulator">
+      <UniqueIdentifier>{82194efe-ac28-49d8-8a13-3cdfbe9a2b8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Firewall">
+      <UniqueIdentifier>{88dd84dc-e21d-4cc7-a346-13c1045c224b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Main">
       <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
       <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
     </Filter>
-    <Filter Include="Header Files">
+    <Filter Include="stdafx">
       <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
       <Extensions>h;hpp;hxx;hm;inl;inc;xsd</Extensions>
-    </Filter>
-    <Filter Include="Resource Files">
-      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
-      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="WebHostEmulator.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="stdafx.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AccountManager.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="deti.pb.cc">
-      <Filter>Source Files</Filter>
+      <Filter>Main</Filter>
     </ClCompile>
     <ClCompile Include="Firewall.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LoginDatabase.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Config.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Firewall</Filter>
     </ClCompile>
     <ClCompile Include="WebHostEmulator_Post.cpp">
-      <Filter>Source Files</Filter>
+      <Filter>Web Host Emulator</Filter>
+    </ClCompile>
+    <ClCompile Include="WebHostEmulator.cpp">
+      <Filter>Web Host Emulator</Filter>
+    </ClCompile>
+    <ClCompile Include="AccountManager.cpp">
+      <Filter>Account Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Config.cpp">
+      <Filter>Configuration</Filter>
+    </ClCompile>
+    <ClCompile Include="LoginDatabase.cpp">
+      <Filter>Login Database</Filter>
+    </ClCompile>
+    <ClCompile Include="deti.pb.cc">
+      <Filter>Google Protobuf</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>stdafx</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="WebHostEmulator.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="stdafx.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AccountManager.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="deti.pb.h">
-      <Filter>Header Files</Filter>
+      <Filter>stdafx</Filter>
     </ClInclude>
     <ClInclude Include="Firewall.h">
-      <Filter>Header Files</Filter>
+      <Filter>Firewall</Filter>
     </ClInclude>
-    <ClInclude Include="LoginDatabase.h">
-      <Filter>Header Files</Filter>
+    <ClInclude Include="WebHostEmulator.h">
+      <Filter>Web Host Emulator</Filter>
+    </ClInclude>
+    <ClInclude Include="AccountManager.h">
+      <Filter>Account Manager</Filter>
     </ClInclude>
     <ClInclude Include="Config.h">
-      <Filter>Header Files</Filter>
+      <Filter>Configuration</Filter>
+    </ClInclude>
+    <ClInclude Include="LoginDatabase.h">
+      <Filter>Login Database</Filter>
+    </ClInclude>
+    <ClInclude Include="deti.pb.h">
+      <Filter>Google Protobuf</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

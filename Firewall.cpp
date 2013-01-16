@@ -1,4 +1,5 @@
 #include "stdafx.h"
+#include "Config.h"
 #include "Firewall.h"
 
 //#define __DEBUG  // Comment this out to disable debug text in console
@@ -211,12 +212,20 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 				printf("User:[%s] connected on thread:[%i] using IP:[%s]\n", username.c_str(), ThreadID, IP_Addr.c_str());
 #endif
 				std::string pollAddress;
-				if (loginDatabase->PollUser(username, pollAddress) == 0) {
+				if (loginDatabase->PollUser(username, pollAddress) == 0) { // Check if user connected using correct ip
 					if (pollAddress == IP_Addr) {
 						Authorised = true;
 						loginDatabase->RemoveUser(username);
 					}
-					else {
+					else { // Player trying to connect with ip different to the one used for authentication
+						std::string kickPacket = GenKickPacket("You must connect the IP you used to log in");
+						iResult = send(*ClientSocket, &kickPacket[0], kickPacket.length(), 0);
+						if (iResult <= 0) {
+#ifdef __DEBUG
+							printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(),ThreadID);
+#endif		
+						}
+
 						closesocket(*ClientSocket);
 						closesocket(*ServerSocket);
 						delete ClientSocket;
@@ -226,7 +235,18 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 						return;
 					}
 				}
-				else {
+				else { // Player did not authenticate using website
+					std::string kickPacket = GenKickPacket(
+						"You must login to\n" + cfg::GetHTTPdns() +
+						"\nwith the username \"" + username +
+						"\"\nbefore you are allowed to\nconnect to this server.");
+					iResult = send(*ClientSocket, &kickPacket[0], kickPacket.length(), 0);
+					if (iResult <= 0) {
+#ifdef __DEBUG
+						printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(), ThreadID);
+#endif		
+					}
+
 					closesocket(*ClientSocket);
 					closesocket(*ServerSocket);
 					delete ClientSocket;
@@ -236,24 +256,16 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 					return;
 				}
 			}
-			else if (uResult == -1) {
+			else if (uResult == -1) { // If client is not trying to connect to the server for game play purposes
 				Authorised = true;
 			}
-			else if (Handshake.length() > 300) {
-#ifdef __DEBUG
-				printf("No handshake packet found on thread:[%i] shutting down connection.\n",ThreadID);
-#endif
-				closesocket(*ClientSocket);
-				closesocket(*ServerSocket);
-				delete ClientSocket;
-			}
 		}
+
 
 		iResult = send(*ServerSocket, &RecvBuffer[0], RecvBuffer.length(), 0);
 		if (iResult == SOCKET_ERROR) {
 #ifdef __DEBUG
-			printf("send failed with error: %d\n", WSAGetLastError());
-			printf("Client thread %i ended\n", ThreadID);
+			printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(), ThreadID);
 #endif			
 			closesocket(*ClientSocket);
 			closesocket(*ServerSocket);
@@ -309,8 +321,7 @@ void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 		iResult = send(*ClientSocket, &RecvBuffer[0], RecvBuffer.length(), 0);
 		if (iResult == SOCKET_ERROR) {
 #ifdef __DEBUG
-			printf("send failed with error: %d\n", WSAGetLastError());
-			printf("Server thread %i ended\n", ThreadID);
+			printf("send failed with error: %d\nServer thread %i ended\n", WSAGetLastError(),ThreadID);
 #endif			 
 			closesocket(*ServerSocket);
 			closesocket(*ClientSocket);
@@ -335,12 +346,12 @@ void Firewall::HandleServer(SOCKET *ServerSocket, SOCKET *ClientSocket)
 
 int Firewall::GetUsername(const std::string data, std::string & username)
 {
-	if (data.length() < 10) {
-		return 1; // Not enough data.
-	}
-
 	if (data.at(0) != 0x02) {
 		return -1; // not correct packet.
+	}
+
+	if (data.length() < 10) {
+		return 1; // Not enough data.
 	}
 
 	// Get username
@@ -359,4 +370,26 @@ int Firewall::GetUsername(const std::string data, std::string & username)
 	}
 
 	return 0; // Username found.
+}
+
+
+std::string Firewall::GenKickPacket(const std::string message)
+{
+	std::string kickPacket;
+
+	// Type
+	kickPacket.push_back((char)0xFF);
+
+	// Length
+	kickPacket.push_back(message.length() >> 8);
+	kickPacket.push_back(message.length() & 0xFF);
+
+	// Payload
+	for (unsigned int i = 0; i < message.length(); i++)
+	{
+		kickPacket.push_back(message.at(i) >> 8);
+		kickPacket.push_back(message.at(i) & 0xFF);
+	}
+
+	return kickPacket;
 }

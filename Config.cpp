@@ -30,6 +30,17 @@ int cfg::getNetworkCfg (std::string &http_port, std::string &deti_port, std::str
 }
 
 
+std::string cfg::GetAdminPassword()
+{
+	std::string data = strConfigReadFile(CONFIG_FILE_PATH);
+
+	if (data.empty() == true)
+		return std::string();
+
+	return strConfigGetValue(data, "admin-pass=", "\r\n");
+}
+
+
 std::string cfg::GetLoginMessage()
 {
 	std::string data = strConfigReadFile(CONFIG_FILE_PATH);
@@ -41,14 +52,14 @@ std::string cfg::GetLoginMessage()
 }
 
 
-std::string cfg::GetAdminPassword()
+std::string cfg::GetHTTPdns()
 {
 	std::string data = strConfigReadFile(CONFIG_FILE_PATH);
 
 	if (data.empty() == true)
 		return std::string();
 
-	return strConfigGetValue(data, "admin-pass=", "\r\n");
+	return strConfigGetValue(data, "http-dns=", "\r\n");
 }
 
 
@@ -64,7 +75,7 @@ std::string cfg::GetAdminPassword()
 	}
 
 	file.seekg (0, ::std::ios::end);
-	int length = file.tellg();
+	int length = (int)file.tellg();
 	file.seekg (0, ::std::ios::beg);
 
 	::std::string data;
