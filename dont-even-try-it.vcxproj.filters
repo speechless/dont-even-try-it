@@ -39,6 +39,9 @@
     <ClCompile Include="Config.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="WebHostEmulator_Post.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="WebHostEmulator.h">

@@ -20,6 +20,7 @@ private:
 
 	std::string Root;
 
+private: // WebHostEmulator.cpp
 	void HandleListen();
 	void HandleClient(SOCKET* socket, const std::string ip_addr);
 
@@ -34,5 +35,11 @@ private:
 
 	std::string GetReq(const std::string &page, std::string &content);
 	std::string PostReq(const std::string &request, const std::string &parameters, const std::string ip_addr);
-};
 
+private: // WebHostEmulator_Post.cpp
+	std::string postLogin	(const std::string &parameters, const std::string ip_addr);
+	std::string postRegister(const std::string &parameters);
+	std::string postForgot	(const std::string &parameters);
+	std::string postChangePassword	(const std::string &parameters);
+	std::string postDelete	(const std::string &parameters);
+};

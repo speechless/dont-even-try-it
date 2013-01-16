@@ -6,6 +6,7 @@
 #include "LoginDatabase.h"
 #include "WebHostEmulator.h"
 
+
 #ifndef __DEBUG
 int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, LPSTR lpCmdLine, int nCmdShow)
 #else
@@ -14,7 +15,7 @@ int main(int argc, char * argv[])
 {
 	std::string http_port, deti_port, mc_addr, mc_port;
 	
-	if (GetConfig(http_port, deti_port, mc_addr, mc_port) != 0) {
+	if (cfg::getNetworkCfg(http_port, deti_port, mc_addr, mc_port) != 0) {
 #ifdef __DEBUG
 		printf("Configuration missing.\n");
 #endif
