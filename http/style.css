@@ -50,7 +50,13 @@ a {
 a:hover {
 	color:#c6c6c6;
 }
-#forgotform {
+#changepasswordform {
+	margin-top:20px;
+}
+#deleteform {
+	margin-top: 30px;
+}
+#forgotform, #loginform {
 	margin-top:40px;
 }
 #inner {
@@ -64,10 +70,7 @@ a:hover {
 	top:-160px;
 	width:610px;
 }
-#loginform {
-	margin-top:40px;
-}
-#loginform, #forgotform, #registerform {
+#changepasswordform, #deleteform, #loginform, #forgotform, #registerform {
 	overflow:hidden;
 	width:100%;
 }
