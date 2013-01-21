@@ -1,78 +1,152 @@
-﻿@font-face {
-	font-family: Coalition;
-	src: url('Coalition_v2.ttf');
+﻿body {
+	background:#000000;
+	color:#c6c6c6;
+	font-family:Verdana, Geneva, Tahoma, sans-serif;
+	font-size:11px;
+	margin:0;
+	padding:0;
 }
-
+body, html {
+	height:100%;
+	min-height:100%;
+	position:relative;
+}
+dd {
+	float:left;
+	margin:0 0 10px;
+	min-width:480px;
+	width:480px;
+}
+dl {
+	margin-top:20px;
+	overflow:hidden;
+	width:100%;
+}
+dt {
+	clear:both;
+	float:left;
+	line-height:30px;
+	min-width:130px;
+	text-align:left;
+	width:130px;
+}
+dt label {
+	display:inline-block;
+	font-size:20px;
+	font-weight:700;
+	vertical-align:middle;
+	width:128px;
+}
+h2 {
+	color:#173658;
+	font-size:30px;
+	margin:0 0 10px;
+	padding:0;
+}
 a {
-	margin-top: 5px;
-	text-decoration: none;
+	color:#FFF;
+	text-decoration:none;
 }
-
-body {
-	background:#E1FFFF;
-	background-image:url('background.jpg');
-	background-repeat: no-repeat;
-	background-position: center top;
-
+a:hover {
+	color:#c6c6c6;
 }
-
-.button {
-	width: 230px;
-	font-family: Coalition;
-	font-size: 30px;
+#forgotform {
+	margin-top:40px;
 }
-
-.field {
-	background-color: #AEA4A1;
+#inner {
+	background:rgba(191,223,121,0.7)!important;
+	background:#BFDF79;
+	height:300px;
+	left:50%;
+	margin-left:-305px;
+	padding:10px 20px;
+	position:absolute;
+	top:-160px;
+	width:610px;
+}
+#loginform {
+	margin-top:40px;
+}
+#loginform, #forgotform, #registerform {
+	overflow:hidden;
+	width:100%;
+}
+#outer {
+	height:1px;
+	left:0;
+	overflow:visible;
+	position:absolute;
+	top:50%;
+	width:100%;
+}
+#registerform{
+	margin-top:20px;
+}
+#subtext {
+	font-size:15px;
+	line-height:20px;
+}
+#wrapper {
+	background:url('static/styles/public/images/cube_world.jpg') no-repeat center bottom;
+	height:100%;
+	margin:0 auto;
+	min-height:500px;
+	padding:0;
+	width:770px;
+	position:relative;
+}
+.bottomlink {
+	clear:both;
+	float:right;
+}
+.downloadlink {
+	margin-top:20px;
+	padding-left:20px;
+}
+.downloadlink a {
+	font-size:20px;
+	font-weight:700;
+}
+.downloadlink img {
+	float:right;
+	margin-right:50px;
+}
+.downloadlink p {
+	font-size:12px;
+	font-weight:700;
+}
+.inputtext {
+	background:rgba(255,255,255,0.7);
+	border:none;
+	font-size:20px;
+	height:30px;
+	width:480px;
+}
+.inputtext:focus {
+	background:rgba(203,221,233,0.9);
+}
+.nav {
+	font-size:18px;
+	margin-right:20px;
+}
+.nav:hover {
+	color:#173658;
+}
+#index #nav_index, #login #nav_login, #register #nav_register, #downloads #nav_downloads, #faq #nav_faq, #whoisonline #nav_whoisonline {
+	color:#173658;
+}
+.submit{
 	border-radius: 5px;
-	color: white;
-	font-family: Coalition;
-	height: 25px;
-	text-align: center;
-	width: 250px;
+	border:none;
+	color:#fff;
+	float: right;
+	font-size:20px;
+	padding:5px 8px;
+	background: #173658;
+	background-size: 100% 100%;
 }
-
-form {
-	margin-top: 0px;
-}
-
-.left {
-	margin: 30px;
-	text-align: left;
-	position: absolute;
-	top: 500px;
-}
-
-.logo {
-	width: 600px;
-}
-
-.PageContainer {
-	border-radius: 30px;
-	height: 600px;
-	margin-left: auto;
-	margin-right: auto;
-	text-align: center;
-	width: 800px;
-}
-
-.spacer {
-	height: 30px;
-}
-
-.text {
-	color: #C9D2D7;
-	font-family: Coalition;
-	font-size: 30px;
-	text-shadow: #000000 0.1em 0.1em 0.2em;
-}
-
-
-table {
-	display: inline;
-}
-
-td {
-	height: 50px;
-	width: 350px;
+.submit:hover{
+	cursor:hand;
+	cursor:pointer;
+	background: #1A92DA;
 }

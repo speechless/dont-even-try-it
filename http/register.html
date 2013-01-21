@@ -1,45 +1,33 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html>
-	<head>
-		<title>Register</title>
-	    <link href="style.css" rel="stylesheet" type="text/css" />
-	</head>
-	<body>
-		<div class="PageContainer">
-			<div class="text">Popinski's</div>
-			<img alt="" class="logo" src="minecraft_logo.png">
-			<div class="text">server</div>
-			
-			<div class="spacer"></div>
-			
-			<form name="login" method="post" action="register">
-				<table>
-					<tr>
-						<td><span class="text">username</span></td>
-						<td><span class="text">email address</span></td>
-					</tr>
-					<tr>
-						<td><input class="field" name="username" type="text"></td>
-						<td><input class="field" name="email" type="text"></td>
-					</tr>
-					<tr>
-						<td><span class="text">password</span></td>
-						<td><span class="text">confirm password</span></td>
-					</tr>
-					<tr>
-						<td><input class="field" name="password1" type="password"></td>
-						<td><input class="field" name="password2" type="password"></td>
-					</tr>
-					
-				</table>
-				<br />
-				<input class="button" type="submit" value="register">
-			</form>
-			
-			<div class="left">
-				<a href="index.html"><span class="text">home</span></a>
-			</div>
+<head>
+	<title>Register :: DETI</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="static/styles/public/images/favicon.png" />
+	<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="register">
+<div id="wrapper"><div id="outer"><div id="inner">
+	<a href="index.html" class="nav home" id="nav_index">Home</a>
+	<a href="login.html" class="nav" id="nav_login">Login</a>
+	<a href="register.html" class="nav" id="nav_register">Register</a>
+	<a href="downloads.html" class="nav" id="nav_downloads">Downloads</a>
+	<a href="faq.html" class="nav" id="nav_faq">FAQ</a>
+	<a href="whoisonline.html" class="nav" id="nav_whoisonline">Who's Online</a>
 
-		</div>
-	</body>
+	<form name="registerform" id="registerform" method="post" action="register">
+	<dl>
+		<dt><label for="username">Username</label></dt><dd><input type="text" name="username" id="username" class="inputtext" /></dd>
+		<dt><label for="username">Email</label></dt><dd><input type="text" name="email" id="email" class="inputtext" /></dd> 
+		<dt><label for="password">Password</label></dt><dd><input type="password" name="password1" id="password" class="inputtext" /></dd>
+		<dt><label for="password">Password</label></dt><dd><input type="password" name="password2" id="password" class="inputtext" /></dd>
+	</dl>
+
+	<input type="submit" name="login" value="Register!" class="submit" />
+	</form>
+
+</div></div></div>	
+</body>
 </html>

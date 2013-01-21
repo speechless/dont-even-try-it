@@ -188,6 +188,8 @@ void WebHostEmulator::HandleClient(SOCKET* socket, const std::string ip_addr)
 				ip_addr
 				);
 
+			ContentType = "text/html"; // This is a temp fix.
+
 			Body = BuildResult(Result, std::string("result.html"));
 			Header = BuildHeader(Body, 200, ContentType, false);
 
@@ -411,7 +413,7 @@ std::string WebHostEmulator::BuildResult (const std::string &message, const std:
 	file.read (&content[0], length);
 	file.close();
 
-	size_t found = content.find("id=\"result\"");
+	size_t found = content.find("id=\"resultinfo\"");
 	if (found == std::string::npos) {
 		return std::string("<!DOCTYPE html><html><head><title></title></head><body>") + message + std::string("</body></html>");
 	}

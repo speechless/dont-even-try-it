@@ -1,0 +1,33 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+	<title>Login :: DETI</title>
+	<meta http-equiv="Pragma" content="no-cache" />
+	<meta http-equiv="Expires" content="-1" />
+	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<link rel="shortcut icon" href="static/styles/public/images/favicon.png" />
+	<link href="style.css" rel="stylesheet" type="text/css" />
+</head>
+<body id="login">
+<div id="wrapper"><div id="outer"><div id="inner">
+	<a href="index.html" class="nav home" id="nav_index">Home</a>
+	<a href="login.html" class="nav" id="nav_login">Login</a>
+	<a href="register.html" class="nav" id="nav_register">Register</a>
+	<a href="downloads.html" class="nav" id="nav_downloads">Downloads</a>
+	<a href="faq.html" class="nav" id="nav_faq">FAQ</a>
+	<a href="whoisonline.html" class="nav" id="nav_whoisonline">Who's Online</a>
+
+	<form name="loginform" id="loginform" method="post" action="login">
+	You have <strong>unlimited</strong> attempts remaining. You will be banned for 6 hours after your login attempts run out.
+	<dl>
+		<dt><label for="username">Username</label></dt><dd><input type="text" name="username" id="username" class="inputtext" /></dd> 
+		<dt><label for="password">Password</label></dt><dd><input type="password" name="password" id="password" class="inputtext" /></dd>
+	</dl>
+
+	<input type="submit" name="login" value="Log In!" class="submit" />
+	<p class="bottomlink"><a href="forgot.html">Forgot your password?</a></p>
+
+	</form>
+</div></div></div>	
+</body>
+</html>

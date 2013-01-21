@@ -220,7 +220,7 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 					else { // Player trying to connect with ip different to the one used for authentication
 						std::string kickPacket = GenKickPacket("You must connect the IP you used to log in");
 						iResult = send(*ClientSocket, &kickPacket[0], kickPacket.length(), 0);
-						if (iResult <= 0) {
+						if (iResult == SOCKET_ERROR) {
 #ifdef __DEBUG
 							printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(),ThreadID);
 #endif		
@@ -241,7 +241,7 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 						"\nwith the username \"" + username +
 						"\"\nbefore you are allowed to\nconnect to this server.");
 					iResult = send(*ClientSocket, &kickPacket[0], kickPacket.length(), 0);
-					if (iResult <= 0) {
+					if (iResult == SOCKET_ERROR) {
 #ifdef __DEBUG
 						printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(), ThreadID);
 #endif		

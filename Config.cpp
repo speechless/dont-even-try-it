@@ -3,6 +3,7 @@
 
 // Local definitions
 #define CONFIG_FILE_PATH "config/deti.properties"
+#define CRLF "\r\n"
 
 // Local declarations
 ::std::string strConfigReadFile (::std::string const &path);
@@ -18,10 +19,10 @@ int cfg::getNetworkCfg (std::string &http_port, std::string &deti_port, std::str
 
 	http_port.clear(); deti_port.clear(); mc_addr.clear(); mc_port.clear();
 
-	http_port = strConfigGetValue(data, "http-port=", "\r\n");
-	deti_port = strConfigGetValue(data, "deti-port=", "\r\n");
-	mc_addr = strConfigGetValue(data, "mc-address=", "\r\n");
-	mc_port = strConfigGetValue(data, "mc-port=", "\r\n");
+	http_port = strConfigGetValue(data, "http-port=", CRLF);
+	deti_port = strConfigGetValue(data, "deti-port=", CRLF);
+	mc_addr = strConfigGetValue(data, "mc-address=", CRLF);
+	mc_port = strConfigGetValue(data, "mc-port=", CRLF);
 
 	if (http_port.empty() || deti_port.empty() || mc_addr.empty() || mc_port.empty())
 		return 1;
@@ -37,7 +38,7 @@ std::string cfg::GetAdminPassword()
 	if (data.empty() == true)
 		return std::string();
 
-	return strConfigGetValue(data, "admin-pass=", "\r\n");
+	return strConfigGetValue(data, "admin-pass=", CRLF);
 }
 
 
@@ -48,7 +49,7 @@ std::string cfg::GetLoginMessage()
 	if (data.empty() == true)
 		return std::string();
 
-	return strConfigGetValue(data, "login-message=", "\r\n");
+	return strConfigGetValue(data, "login-message=", CRLF);
 }
 
 
@@ -59,7 +60,7 @@ std::string cfg::GetHTTPdns()
 	if (data.empty() == true)
 		return std::string();
 
-	return strConfigGetValue(data, "http-dns=", "\r\n");
+	return strConfigGetValue(data, "http-dns=", CRLF);
 }
 
 
