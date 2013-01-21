@@ -42,4 +42,8 @@ private: // WebHostEmulator_Post.cpp
 	std::string postForgot	(const std::string &parameters);
 	std::string postChangePassword	(const std::string &parameters);
 	std::string postDelete	(const std::string &parameters);
+
+private: // WebHostEmulator_JSON.cpp
+	std::string jsonGet	(const std::string &request, std::string &data);
+	std::string jsonWhoIsOnline ();
 };

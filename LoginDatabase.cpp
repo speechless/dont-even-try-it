@@ -22,6 +22,8 @@ int LoginDatabase::init(const unsigned int Timeout)
 
 	std::thread t(&LoginDatabase::HandleTimeout, this);
 	t.detach();
+	std::thread u(&LoginDatabase::HandleTimer, this);
+	u.detach();
 
 	return 0;
 }
@@ -38,7 +40,6 @@ int LoginDatabase::deinit()
 
 int LoginDatabase::AddUser(std::string username, const std::string ip_address)
 {
-
 	std::transform(username.begin(), username.end(), username.begin(), ::tolower); 
 	std::lock_guard<std::mutex> m(m_database);
 
@@ -154,4 +155,96 @@ void LoginDatabase::HandleTimeout()
 	m_KeepAlive.unlock();
 
 	return;
+}
+
+
+void LoginDatabase::HandleTimer() {
+	m_KeepAlive.lock();
+
+	while (KeepAlive)
+	{
+		m_KeepAlive.unlock();
+
+		m_userUptime.lock();
+		std::list <connectionTimer>::iterator i = userUptime.begin();
+		while (i != userUptime.end()) 
+		{
+			i->uptime+=5;
+			i++;
+		}
+		m_userUptime.unlock();
+
+		std::this_thread::sleep_for(std::chrono::seconds(5));
+
+		m_KeepAlive.lock();
+	}
+
+	m_KeepAlive.unlock();
+}
+
+
+int LoginDatabase::AddUserTimer(std::string username)
+{
+	std::transform(username.begin(), username.end(), username.begin(), ::tolower); 
+	std::lock_guard<std::mutex> m(m_userUptime);
+
+#ifdef __DEBUG
+	printf("Added:%s\n", username.c_str());
+#endif
+	
+	for (std::list <connectionTimer>::iterator i = userUptime.begin(); i != userUptime.end(); i++)
+	{
+		if (i->username == username)
+		{
+			i->uptime = 0;		
+			return 0;
+		}
+	}
+
+	connectionTimer NewSession;
+
+	NewSession.uptime = 0;
+	NewSession.username = username;
+
+	userUptime.push_back(NewSession);
+	
+	return 0;
+}
+
+
+int LoginDatabase::PollUserTimer(std::vector <std::string> &username, std::vector <unsigned int> &timers)
+{
+	username.clear();
+	timers.clear();
+
+	std::lock_guard<std::mutex> m(m_userUptime);
+
+	for (std::list <connectionTimer>::iterator i = userUptime.begin(); i != userUptime.end(); i++)
+	{
+		username.push_back(i->username);
+		timers.push_back(i->uptime);
+	}
+
+	return 0;
+}
+
+
+int LoginDatabase::RemoveUserTimer(std::string username)
+{
+	std::transform(username.begin(), username.end(), username.begin(), ::tolower); 
+	std::lock_guard<std::mutex> m(m_userUptime);
+
+	for (std::list <connectionTimer>::iterator i = userUptime.begin(); i != userUptime.end(); i++)
+	{
+		if (i->username == username)
+		{
+#ifdef __DEBUG
+			printf("Removed:%s\n", i->username.c_str());
+#endif
+			userUptime.erase(i);
+			return 0;
+		}
+	}
+	
+	return 0;
 }

@@ -178,7 +178,7 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 	printf("Client thread %i started\n", ThreadID);
 #endif
 
-	std::string Handshake;
+	std::string Handshake, username;
 	Handshake.reserve(512);
 	bool Authorised = false;
 
@@ -195,6 +195,10 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 #ifdef __DEBUG
 			printf("Client thread %i ended\n", ThreadID);
 #endif
+			if (Authorised == true && !username.empty()) {
+				loginDatabase->RemoveUserTimer(username);
+			}
+
 			closesocket(*ClientSocket);
 			closesocket(*ServerSocket);
 			delete ClientSocket;
@@ -205,7 +209,6 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 
 		if (Authorised == false) {
 			Handshake.append(RecvBuffer);
-			std::string username;
 			int uResult = GetUsername(Handshake, username);
 			if (uResult == 0) {
 #ifdef __DEBUG
@@ -216,6 +219,7 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 					if (pollAddress == IP_Addr) {
 						Authorised = true;
 						loginDatabase->RemoveUser(username);
+						loginDatabase->AddUserTimer(username);
 					}
 					else { // Player trying to connect with ip different to the one used for authentication
 						std::string kickPacket = GenKickPacket("You must connect the IP you used to log in");
@@ -266,7 +270,11 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 		if (iResult == SOCKET_ERROR) {
 #ifdef __DEBUG
 			printf("send failed with error: %d\nClient thread %i ended\n", WSAGetLastError(), ThreadID);
-#endif			
+#endif
+			if (Authorised == true && !username.empty()) {
+				loginDatabase->RemoveUserTimer(username);
+			}
+
 			closesocket(*ClientSocket);
 			closesocket(*ServerSocket);
 			delete ClientSocket;
@@ -280,6 +288,10 @@ void Firewall::HandleClient(SOCKET *ClientSocket, SOCKET *ServerSocket, const st
 #ifdef __DEBUG
 	printf("Client thread %i ended\n", ThreadID);
 #endif
+
+	if (Authorised == true && !username.empty()) {
+		loginDatabase->RemoveUserTimer(username);
+	}
 
 	closesocket(*ClientSocket);
 	closesocket(*ServerSocket);

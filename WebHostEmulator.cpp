@@ -252,6 +252,11 @@ std::string WebHostEmulator::GetReq(const std::string &page, std::string &conten
 		return std::string("image/x-icon");
 	}
 
+	else if (extension == std::string(".virtual_json")) {
+		std::string buffer = jsonGet(page, content);
+		return buffer;
+	}
+
 	return std::string();
 }
 

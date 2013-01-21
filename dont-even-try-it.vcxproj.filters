@@ -56,6 +56,9 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>stdafx</Filter>
     </ClCompile>
+    <ClCompile Include="WebHostEmulator_JSON.cpp">
+      <Filter>Web Host Emulator</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">

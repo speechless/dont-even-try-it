@@ -153,3 +153,16 @@ a:hover {
 	cursor:pointer;
 	background: #1A92DA;
 }
+/* Who is online module */
+#table_whoisonline{
+	margin-top: 20px;
+	text-align:center;
+}
+#table_whoisonline .whoisonline {
+	display:inline-block;
+}
+#table_whoisonline .whoisonline th{
+	color:#173658;
+	font-size:18px;
+	width: 100px;
+}

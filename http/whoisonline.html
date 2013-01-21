@@ -5,9 +5,12 @@
 	<meta http-equiv="Pragma" content="no-cache" />
 	<meta http-equiv="Expires" content="-1" />
 	<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+	<meta http-equiv="refresh" content="5" />
+	<script src="http://code.jquery.com/jquery-latest.js"></script>
 	<link rel="shortcut icon" href="static/styles/public/images/favicon.png" />
 	<link href="style.css" rel="stylesheet" type="text/css" />
 </head>
+
 <body id="whoisonline">
 <div id="wrapper"><div id="outer"><div id="inner">
 	<a href="index.html" class="nav home" id="nav_index">Home</a>
@@ -16,6 +19,24 @@
 	<a href="downloads.html" class="nav" id="nav_downloads">Downloads</a>
 	<a href="faq.html" class="nav" id="nav_faq">FAQ</a>
 	<a href="whoisonline.html" class="nav" id="nav_whoisonline">Who's Online</a>
+
+
+	<div id="table_whoisonline"></div>
+	
+	<script>
+	$(document).ready(function(){
+		$.getJSON('whoisonline.virtual_json', function(data) {
+			var html_code = '<table class="whoisonline"><thead><tr><th>Player</th><th>Connected</th><th></th><th>Player</th><th>Connected</th></tr></thead><tr>';
+			for (var i = 0; i < data.length; i++) {
+				html_code += '<td>' + data[i].player + '</td><td>' + data[i].uptime + '</td>';
+				if (i % 2 == 1) html_code += '</tr><tr>';
+				else html_code += '<td></td>';
+			}		
+			html_code += '</tr></table>';
+			document.getElementById("table_whoisonline").innerHTML = html_code;
+		});
+	});
+	</script>
 
 </div></div></div>	
 </body>
