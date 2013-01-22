@@ -1,14 +1,14 @@
-Version: 0.0.0.2 ----------
+Version: 0.0.0.3 ----------
+* Redesigned template website
+* Added "who is online" module
+* Added JSON support
 
-*Added kick messages for failed minecraft connects
-*Added http dns setting to "server.properties"
-*Fixed delete and change password requests
+Version: 0.0.0.2 ----------
+* Added kick messages for failed minecraft connects
+* Added http dns setting to [server.properties] file
+* Fixed delete and change password requests
 
 Version: 0.0.0.1 ----------
-
-*Added webserver support for changing
-password of exsiting account
-
-*Added webserver support for deleting accounts
-
-*Added admin password to "server.properties"
+* Added webserver support for changing password of exsiting account
+* Added webserver support for deleting accounts
+* Added admin password to [server.properties] file

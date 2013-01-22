@@ -169,12 +169,12 @@ void LoginDatabase::HandleTimer() {
 		std::list <connectionTimer>::iterator i = userUptime.begin();
 		while (i != userUptime.end()) 
 		{
-			i->uptime+=5;
+			i->uptime++;
 			i++;
 		}
 		m_userUptime.unlock();
 
-		std::this_thread::sleep_for(std::chrono::seconds(5));
+		std::this_thread::sleep_for(std::chrono::seconds(1));
 
 		m_KeepAlive.lock();
 	}

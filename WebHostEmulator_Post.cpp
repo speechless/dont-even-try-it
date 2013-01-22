@@ -4,7 +4,7 @@
 
 #define RESULT_PREFIX "<h2>"
 #define RESULT_SUFFIX "</h2>"
-#define MESSAGE_PREFIX "<p>"
+#define MESSAGE_PREFIX "<p class=\"server_response\">"
 #define MESSAGE_SUFFIX "</p>"
 
 // #define __DEBUG // Comment this out to disable debug text in console
